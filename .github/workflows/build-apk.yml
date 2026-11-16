@@ -1,0 +1,38 @@
+
+name: Gerar APK MotoGest
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obter codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Preparar Android
+        run: |
+          cd motogest
+          flutter create --platforms=android .
+          flutter pub get
+
+      - name: Gerar APK
+        run: |
+          cd motogest
+          flutter build apk --release
+
+      - name: Guardar APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: MotoGest-APK
+          path: motogest/build/app/outputs/flutter-apk/app-release.apk
